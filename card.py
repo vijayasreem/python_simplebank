@@ -15,7 +15,8 @@ class Card():
         etc.Debug(f"Associated account: {AccountNumber}")
 
     def __str__(self):
-        return f"Card Number: {self.CardNumber}\nExpiry: {self.Expiry}\nPIN: {self.PIN}\nCVC: {self.CVC}\nAccount: {self.Account}"
+        account = self.GetAccount()
+        return f"Account Holder: {account.AccountHolder}\nCard Number: {self.CardNumber}\nExpiry: {self.Expiry}\nPIN: {self.PIN}\nCVC: {self.CVC}\nAssociated Account: {self.Account}"
 
     @staticmethod
     def GetFromDB(CardNumber):
@@ -28,22 +29,19 @@ class Card():
             return None
         else:
             card = Card.FromDBRecord(result)
-            #card = Card(
-             #   result['card_number'],
-             #   result['expiry'],
-             #   result['pin'],
-#                result['cvc'],
-#                result['account_number'],)
             return card
+
     @classmethod
-    def GetAccount(self):
-        return Account.GetFromDB(self.CardNumber)
+    def GetAccount(cls, CardNumber):
+        return Account.GetFromDB(CardNumber)
+
     @staticmethod
     def FromAccount(AccountNumber):
         query = f"SELECT card_number FROM cards WHERE cards.account_number = '{AccountNumber}'"
         cardnum = db.ExecuteScalar(query)['card_number']
         return Card.GetFromDB(cardnum) if cardnum is not None else None
 
+    @staticmethod
     def FromDBRecord(record):
         return Card(record['account_number'], record['expiry'], record['pin'], record['cvc'], record['card_number'])
 
