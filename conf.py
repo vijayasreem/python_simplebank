@@ -3,8 +3,6 @@ import os.path
 import threading
 from etc import Debug
 
-# Simple JSON Handler
-
 lock = threading.Lock()
 
 def Write(filename, config) -> bool:
@@ -14,8 +12,6 @@ def Write(filename, config) -> bool:
             json.dump(config, f, indent=4)
             Debug(f"Wrote configuration to {filename}.")
             retVal = True
-            f.close()
-
     except Exception as e:
         print("Failed to write config file: ", e)
         retVal = False
@@ -33,7 +29,7 @@ def Read(filename, default) -> dict:
         Debug(f"Config file {filename} created.")
         retVal = default
     else:
-        for _ in range(3):
+        for _ in range(4):
             if lock.acquire(blocking=False):
                 try:
                     with open(filename, "r") as f:
